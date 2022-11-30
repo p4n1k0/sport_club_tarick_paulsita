@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import statusCodes from '../statusCodes';
 import UserService from '../services/user.service';
 import JWTtoken from '../utils/tokenDecode';
 
@@ -10,7 +11,7 @@ export default class UserController {
     const { authorization } = req.headers;
     const data = await this.service.loginAuth(authorization || 'string');
 
-    return res.status(200).json({ role: data && data.role });
+    return res.status(statusCodes.ok).json({ role: data && data.role });
   };
 
   public login = async (req: Request, res: Response) => {
@@ -18,11 +19,13 @@ export default class UserController {
     const data = await this.service.loginValidate(email, password);
 
     if (data === 400) {
-      return res.status(400).json({ message: 'All fields must be filled' });
+      return res.status(statusCodes.badRequest).json({ message: 'All fields must be filled' });
     }
     if (data === 401) {
-      return res.status(401).json({ message: 'Incorrect email or password' });
+      return res.status(statusCodes.unauthorized).json({ message: 'Incorrect email or password' });
     }
-    if (data === 200) { return res.status(200).json({ token: this.token.newToken(req.body) }); }
+    if (data === 200) {
+      return res.status(statusCodes.ok).json({ token: this.token.newToken(req.body) });
+    }
   };
 }

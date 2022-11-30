@@ -32,11 +32,3 @@ describe('Testando o endpoint "/teams"', () => {
         expect(chaiHttpResponse.body).to.deep.equal(teamData);
     });
 });
-function before(arg0: () => Promise<void>) {
-    throw new Error('Function not implemented.');
-}
-
-function after(arg0: () => void) {
-    throw new Error('Function not implemented.');
-}
-

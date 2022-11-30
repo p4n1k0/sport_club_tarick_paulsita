@@ -33,11 +33,3 @@ describe('Testando o endpoint "/login"', () => {
     expect(chaiHttpResponse.body).to.deep.equal(userData);
   });  
 });
-function before(arg0: () => Promise<void>) {
-  throw new Error('Function not implemented.');
-}
-
-function after(arg0: () => void) {
-  throw new Error('Function not implemented.');
-}
-

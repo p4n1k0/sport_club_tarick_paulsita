@@ -1,5 +1,5 @@
 import Teams from '../database/models/TeamsModel';
-import { ITeam, Team } from '../interfaces/index';
+import { ITeam, Team } from '../interfaces';
 
 export default class TeamsService {
   constructor(private team = Teams) {}

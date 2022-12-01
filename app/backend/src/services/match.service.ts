@@ -1,5 +1,6 @@
 import Teams from '../database/models/TeamsModel';
 import Matchers from '../database/models/MatchesModel';
+import { IMatch } from '../interfaces';
 
 export default class MatchService {
   constructor(private matches = Matchers) {}
@@ -35,6 +36,18 @@ export default class MatchService {
         model: Teams,
         as: 'teamAway',
       }],
+    });
+    return data;
+  }
+
+  public async createMatch(newMatches: IMatch): Promise<Matchers> {
+    const { homeTeam, awayTeam, homeTeamGoals, awayTeamGoals } = newMatches;
+    const data = await this.matches.create({
+      homeTeam,
+      homeTeamGoals,
+      awayTeam,
+      awayTeamGoals,
+      inProgress: true,
     });
     return data;
   }

@@ -16,3 +16,5 @@ export const teamData: unknown = [
     { id: 15, team_name: 'São José-SP' },
     { id: 16, team_name: 'São Paulo' },
 ];
+
+export const team = { id: 1, teamName: 'Avaí/Kindermann' };

@@ -5,9 +5,17 @@ import MatchService from '../services/match.service';
 export default class MatchController {
   public matchesService = new MatchService();
 
-  async getAll(_req: Request, res: Response) {
-    const matches = await this.matchesService.getAll();
+  async getAllInProgress(req: Request, res: Response) {
+    const { inProgress } = req.query;
 
-    res.status(statusCodes.ok).json(matches);
+    if (inProgress) {
+      const boolean = inProgress !== 'false';
+      const matches = await this.matchesService.getAllInProgress(boolean);
+
+      return res.status(statusCodes.ok).json(matches);
+    }
+    const data = await this.matchesService.getAll();
+
+    return res.status(statusCodes.ok).json(data);
   }
 }

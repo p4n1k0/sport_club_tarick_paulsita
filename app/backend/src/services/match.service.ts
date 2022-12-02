@@ -1,6 +1,6 @@
 import Teams from '../database/models/TeamsModel';
 import Matchers from '../database/models/MatchesModel';
-import { IMatch } from '../interfaces';
+import { IMatch, Match } from '../interfaces';
 
 export default class MatchService {
   private teamsTable;
@@ -67,10 +67,14 @@ export default class MatchService {
   }
 
   public async updateMatch(id: number) {
-    const matchers = await this.matches.update(
-      { inProgress: false },
-      { where: { id } },
-    );
+    const matchers = await this.matches.update({ inProgress: false }, { where: { id } });
+
     return { matchers, message: 'Finished' };
+  }
+
+  public async updateMatches(id: number, matches: Match) {
+    await this.matches.update({ ...matches }, { where: { id } });
+
+    return matches;
   }
 }

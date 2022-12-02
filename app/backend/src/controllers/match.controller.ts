@@ -44,4 +44,11 @@ export default class MatchController {
 
     res.status(statusCodes.ok).json(matches.message);
   }
+
+  async updateMatch(req: Request, res: Response) {
+    const { id } = req.params;
+    const matches = await this.matchesService.updateMatches(+id, req.body);
+
+    return res.status(statusCodes.ok).json(matches);
+  }
 }

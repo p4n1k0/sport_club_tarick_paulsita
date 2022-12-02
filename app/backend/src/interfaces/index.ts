@@ -11,10 +11,13 @@ export interface ITeam extends Team {
   teamName: string;
 }
 
-export interface IMatch extends ITeam {
-  homeTeam: number;
-  homeTeamGoals: number;
+export interface Match extends ITeam {
+  homeTeam?: number;
+  homeTeamGoals?: number;
   awayTeam: number;
   awayTeamGoals: number;
+}
+
+export interface IMatch extends Match {
   inProgress: boolean;
 }

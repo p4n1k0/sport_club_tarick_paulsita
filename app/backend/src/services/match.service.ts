@@ -3,7 +3,10 @@ import Matchers from '../database/models/MatchesModel';
 import { IMatch } from '../interfaces';
 
 export default class MatchService {
-  constructor(private matches = Matchers) {}
+  private teamsTable;
+  constructor(private matches = Matchers) {
+    this.teamsTable = Teams;
+  }
 
   public async getAll(): Promise<Matchers[]> {
     const matchers = await this.matches.findAll({
@@ -42,8 +45,17 @@ export default class MatchService {
     return data;
   }
 
-  public async createMatch(newMatches: IMatch): Promise<Matchers> {
+  public async createMatch(newMatches: IMatch) {
     const { homeTeam, awayTeam, homeTeamGoals, awayTeamGoals } = newMatches;
+    const homeId = await this.teamsTable.findByPk(homeTeam);
+    const awayId = await this.teamsTable.findByPk(awayTeam);
+
+    if (!homeId || !awayId) {
+      return {
+        status: 404, response: { message: 'There is no team with such id!' },
+      };
+    }
+
     const data = await this.matches.create({
       homeTeam,
       homeTeamGoals,
@@ -51,7 +63,7 @@ export default class MatchService {
       awayTeamGoals,
       inProgress: true,
     });
-    return data;
+    return { status: 201, response: data };
   }
 
   public async updateMatch(id: number) {

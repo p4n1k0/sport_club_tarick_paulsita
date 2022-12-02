@@ -27,9 +27,15 @@ export default class MatchController {
         { message: 'It is not possible to create a match with two equal teams' },
       );
     }
+    if (!homeTeam || !awayTeam) {
+      return res.status(statusCodes.notFound).json(
+        { message: 'There is no team with sich id!' },
+      );
+    }
+
     const matches = await this.matchesService.createMatch(req.body);
 
-    return res.status(statusCodes.created).json(matches);
+    return res.status(matches.status).json(matches.response);
   }
 
   async update(req: Request, res: Response) {

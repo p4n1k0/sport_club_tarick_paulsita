@@ -5,7 +5,8 @@ const router = Router();
 
 const matcheController = new MatchController();
 
-router.get('/', (req, res) => matcheController.getAllInProgress(req, res));
+router.get('/', (req, res) => matcheController.getInProgress(req, res));
 router.post('/', (req, res) => matcheController.create(req, res));
+router.patch('/:id/finish', (req, res) => matcheController.update(req, res));
 
 export default router;

@@ -3,9 +3,9 @@ import UserController from '../controllers/user.controller';
 
 const router = Router();
 
-const loginController = new UserController();
+const userController = new UserController();
 
-router.get('/validate', (req, res) => loginController.loginValidate(req, res));
-router.post('/', (req, res) => loginController.login(req, res));
+router.get('/validate', (req, res) => userController.loginValidate(req, res));
+router.post('/', (req, res) => userController.login(req, res));
 
 export default router;

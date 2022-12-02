@@ -5,7 +5,7 @@ import MatchService from '../services/match.service';
 export default class MatchController {
   public matchesService = new MatchService();
 
-  async getAllInProgress(req: Request, res: Response) {
+  async getInProgress(req: Request, res: Response) {
     const { inProgress } = req.query;
 
     if (inProgress) {
@@ -23,5 +23,12 @@ export default class MatchController {
     const matches = await this.matchesService.createMatch(req.body);
 
     return res.status(statusCodes.created).json(matches);
+  }
+
+  async update(req: Request, res: Response) {
+    const { id } = req.params;
+    const matches = await this.matchesService.updateMatch(Number(id));
+
+    res.status(statusCodes.ok).json(matches.message);
   }
 }

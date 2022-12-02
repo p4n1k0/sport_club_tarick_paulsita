@@ -11,13 +11,15 @@ export default class MatchService {
         model: Teams,
         as: 'teamHome',
         attributes: {
-          exclude: ['id'] },
+          exclude: ['id'],
+        },
       },
       {
         model: Teams,
         as: 'teamAway',
         attributes: {
-          exclude: ['id'] },
+          exclude: ['id'],
+        },
       }],
     });
     return matchers;
@@ -50,5 +52,13 @@ export default class MatchService {
       inProgress: true,
     });
     return data;
+  }
+
+  public async updateMatch(id: number) {
+    const matchers = await this.matches.update(
+      { inProgress: false },
+      { where: { id } },
+    );
+    return { matchers, message: 'Finished' };
   }
 }

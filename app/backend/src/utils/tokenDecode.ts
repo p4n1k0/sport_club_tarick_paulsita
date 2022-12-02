@@ -11,13 +11,9 @@ export default class JWTService {
     return token;
   };
 
-  validateToken = (token: string): jwt.JwtPayload => {
-    try {
-      const data = jwt.verify(token, process.env.JWT_SECRET || 'jwt_secret');
+  tokenValidate = (token: string): jwt.JwtPayload => {
+    const data = jwt.verify(token, process.env.JWT_SECRET || 'jwt_secret');
 
-      return data as jwt.JwtPayload;
-    } catch (error) {
-      return { type: 400 };
-    }
+    return data as jwt.JwtPayload;
   };
 }

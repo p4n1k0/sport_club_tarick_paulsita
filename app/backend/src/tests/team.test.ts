@@ -58,7 +58,7 @@ describe('Testando o endpoint "/teams"', () => {
         });
 
         it('Testando retorno do endpoint "teams/:id"', async () => {
-            const data = await request(app).get('/teams/50').send();
+            const data = await request(app).get('/teams/69').send();
 
             expect(data.status).to.be.eq(statusCodes.notFound);
             expect(data.body.message).to.eq('Team not exist');

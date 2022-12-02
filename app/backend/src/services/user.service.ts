@@ -8,10 +8,10 @@ export default class UserService {
   constructor(private users = Users) { }
 
   public loginAuth = async (authorization: string) => {
-    const jwt = this.jwt.validateToken(authorization);
-    const user = await this.users.findOne({ where: { email: jwt.email } });
-
-    console.log(user);
+    const jwt = this.jwt.tokenValidate(authorization);
+    const user = await this.users.findOne({
+      where: { email: jwt.email },
+    });
     return user;
   };
 

@@ -11,6 +11,19 @@ export interface ITeam extends Team {
   teamName: string;
 }
 
+export interface ILeaderboard extends Team {
+  name: string;
+  totalPoints: number;
+  totalGames: number;
+  totalVictories: number;
+  totalDraws: number;
+  totalLosses: number;
+  goalsFavor: number;
+  goalsOwn: number;
+  goalsBalance: number;
+  efficiency: string;
+}
+
 export interface Match extends ITeam {
   homeTeam?: number;
   homeTeamGoals?: number;

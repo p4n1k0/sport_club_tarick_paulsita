@@ -6,7 +6,7 @@ import chaiHttp = require('chai-http');
 import App from '../app';
 import MatchesModel from '../database/models/MatchesModel';
 import statusCodes from '../statusCodes';
-import { matchData, matchesEqualsTeam, matchesInProgress, matchesInserted, matchesNotInProgress } from './mocks/match';
+import { matchData, matchesEqualsTeam, matchesInProgress, matchesInserted, matchesNotInProgress, matcheTeamNotExist, matcheUpdated } from './mocks/match';
 
 chai.use(chaiHttp);
 
@@ -90,7 +90,7 @@ describe('Testando endpoint "/matches"', () => {
         });
     });
 
-    describe('Testando endpoint PATCH "/:id/fniish"', () => {
+    describe('Testando endpoint PATCH "/:id/finish"', () => {
         before(() => {
             sinon.stub(MatchesModel, 'update').resolves();
         });
@@ -98,11 +98,27 @@ describe('Testando endpoint "/matches"', () => {
             (MatchesModel.update as sinon.SinonStub).restore();
         });
 
-        it('Testando retorno do endpoint com sucesso', async () => {
+        it('Testando retorno do endpoint "/matches/:id/finish" com sucesso', async () => {
             const data = await await request(app).patch('/matches/2/finish').set('Authorization', token).send();
 
             expect(data.status).to.be.eq(statusCodes.ok);
             expect(data.body).to.eq({ message: 'Finished' });
+        });
+    });
+
+    describe('Testando finalização de confronto inexistente', () => {
+        before(() => {
+            sinon.stub(MatchesModel, 'update').resolves();
+        });
+        after(() => {
+            (MatchesModel.update as sinon.SinonStub).restore();
+        })
+
+        it('Testando erro de busca de confronto finalizado inexistente', async () => {
+            const matche = await request(app).patch('/matches/777/finish').set('Authorization', token).send();
+
+            expect(matche.status).to.be.eq(statusCodes.notFound);
+            expect(matche.body).to.eq({ message: 'Match not exist' });
         });
     });
 
@@ -115,9 +131,58 @@ describe('Testando endpoint "/matches"', () => {
         });
 
         it('Testando erro ao finalizar confronto inexistente', async () => {
-            const data = await request(app).post('/matches').set('Authorization', token).send(matchesEqualsTeam)
+            const matche = await request(app).post('/matches').set('Authorization', token).send(matchesEqualsTeam)
 
-            expect(data.status).to.be.eq(statusCodes.notFound);
+            expect(matche.status).to.be.eq(statusCodes.notFound);
+            expect(matche.body).to.eq({ message: 'It is not possible to create a match with two equal teams' });
+        });
+    });
+
+    describe('Testando inserção de um novo confronto com tima inexistente', () => {
+        before(() => {
+            sinon.stub(MatchesModel, 'create').resolves();
+        });
+        after(() => {
+            (MatchesModel.create as sinon.SinonStub).restore();
+        });
+
+        it('Testando erro de inserção de confronto com time inexistente na tabela', async () => {
+            const matche = await request(app).post('/matches').set('Authorization', token).send(matcheTeamNotExist);
+            
+            expect(matche.status).to.be.eq(statusCodes.notFound);
+            expect(matche.body).to.eq({ message: 'There is no team with such id!' });
+        });        
+    });
+
+    describe('Testando sucesso do endpoint PATCH "/matche/:id"', () => {
+        before(() => {
+            sinon.stub(MatchesModel, 'update').resolves();
+        });
+        after(() => {
+            (MatchesModel.update as sinon.SinonStub).restore();
+        });
+
+        it('Testando retorno de atualização', async () => {
+            const matche = await request(app).patch('/matches/1').set('Authorization', token).send(matcheUpdated);
+
+            expect(matche.status).to.be.eq(statusCodes.ok);
+            expect(matche.body).to.eq({ message: 'Match updated!' });
+        });
+    });
+
+    describe('Testando falha do enpoint PATCH "/matche/:id"', () => {
+        before(() => {
+            sinon.stub(MatchesModel, 'update').resolves();
+        });
+        after(() => {
+            (MatchesModel.update as sinon.SinonStub).restore();
+        });
+
+        it('Testando retorno de atualização de um confronto inexistente', async () => {
+            const matche = await request(app).patch('/matches/777').set('Authorization', token).send(matcheUpdated);
+
+            expect(matche.status).to.be.eq(statusCodes.notFound);
+            expect(matche.body).to.eq({ message: 'Match not exist' });
         });
     });
 });

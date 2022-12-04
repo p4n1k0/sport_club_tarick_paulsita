@@ -112,3 +112,15 @@ export const matchesEqualsTeam = {
     awayTeam: 16,
     awayTeamGoals: 2,
 }
+
+export const matcheTeamNotExist = {
+    homeTeam: 777,
+    homeTeamGoals: 2,
+    awayTeam: 44,
+    awayTeamGoals: 2,
+}
+
+export const matcheUpdated = {
+    homeTeamGoals: 7,
+    awayTeamGoals: 6,
+}

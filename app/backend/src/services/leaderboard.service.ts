@@ -9,63 +9,63 @@ export default class LeaderboardService {
     this._team = Teams;
   }
 
-  private async matches(team: number) {
+  private async totalMatches(team: number) {
     const matches = await this._leaderboard;
 
     return matches.filter((matche) => matche.homeTeam === team && !matche.inProgress);
   }
 
   private async victories(team: number) {
-    const victory = await this.matches(team);
+    const victory = await this.totalMatches(team);
 
     return victory.filter((matche) => matche.homeTeamGoals > matche.awayTeamGoals);
   }
 
   private async draws(team: number) {
-    const draw = await this.matches(team);
+    const draw = await this.totalMatches(team);
 
-    return draw.filter((matche) => matche.homeTeam === matche.awayTeamGoals);
+    return draw.filter((matche) => matche.homeTeamGoals === matche.awayTeamGoals);
   }
 
-  private async loss(team: number) {
-    const defeat = await this.matches(team);
+  private async losses(team: number) {
+    const loss = await this.totalMatches(team);
 
-    return defeat.filter((matche) => matche.homeTeamGoals < matche.awayTeamGoals);
+    return loss.filter((matche) => matche.homeTeamGoals < matche.awayTeamGoals);
   }
 
   private async favorGoals(team: number) {
-    const goals = await this.matches(team);
+    const goal = await this.totalMatches(team);
 
-    return goals.reduce((acc, cur) => acc + cur.homeTeamGoals, 0);
+    return goal.reduce((acc, cur) => acc + cur.homeTeamGoals, 0);
   }
 
   private async ownGoals(team: number) {
-    const goals = await this.matches(team);
+    const goal = await this.totalMatches(team);
 
-    return goals.reduce((acc, cur) => acc + cur.awayTeamGoals, 0);
+    return goal.reduce((acc, cur) => acc + cur.awayTeamGoals, 0);
   }
 
   private async efficiencies(team: number) {
     const multiplerEff = 3;
     const multiplerTotalEff = 100;
-    const maxEfficiency = (await this.matches(team)).length * multiplerEff;
     const efficiency = ((await this.victories(team)).length * multiplerEff)
     + (await this.draws(team)).length;
+    const maxEfficiency = (await this.totalMatches(team)).length * multiplerEff;
 
     return ((efficiency / maxEfficiency) * multiplerTotalEff).toFixed(2);
   }
 
   public async getAll() {
-    const teams = await this._team.findAll();
     const multiplerEff = 3;
+    const teams = await this._team.findAll();
     const leaderboard = await Promise.all(teams.map(async (team) => ({
       name: team.teamName,
       totalPoints: ((await this.victories(team.id)).length * multiplerEff)
       + (await this.draws(team.id)).length,
-      totalGames: (await this.matches(team.id)).length,
+      totalGames: (await this.totalMatches(team.id)).length,
       totalVictories: (await this.victories(team.id)).length,
       totalDraws: (await this.draws(team.id)).length,
-      totalLosses: (await this.loss(team.id)).length,
+      totalLosses: (await this.losses(team.id)).length,
       goalsFavor: await this.favorGoals(team.id),
       goalsOwn: await this.ownGoals(team.id),
       goalsBalance: await this.favorGoals(team.id) - await this.ownGoals(team.id),

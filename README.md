@@ -57,10 +57,10 @@ Leia essa parte atentamente, pois aqui você encontrará informações important
 <details>
 <summary><strong> 🔰 Iniciando o projeto</strong></summary><br />
 
-  1. Clone o repositório `git clone git@github.com:p4n1k0/sport-club-tarick-paulsita.git`
+  1. Clone o repositório `git clone git@github.com:p4n1k0/sport_club_tarick_paulsita.git`
 
 - Entre na pasta do repositório que você acabou de clonar:
-  * `cd sport-club-tarick-paulsita`
+  * `cd sport_club_tarick_paulsita`
 
   2. Instale as dependências [**Caso existam**]
   *`npm install`

@@ -6,3 +6,7 @@
 coverage
 front.eval
 back.eval
+__tests__/
+.trybe
+data-testid.md 
+jest.config.js

@@ -8,25 +8,25 @@ export interface Team {
 }
 
 export interface ITeam extends Team {
-  teamName: string;
+  teamName?: string;
 }
 
 export interface ILeaderboard extends Team {
-  name: string;
+  name?: string;
   totalPoints: number;
-  totalGames: number;
+  totalGames?: number;
   totalVictories: number;
   totalDraws: number;
   totalLosses: number;
   goalsFavor: number;
   goalsOwn: number;
   goalsBalance: number;
-  efficiency: string;
+  efficiency: number;
 }
 
 export interface Match extends ITeam {
-  homeTeam?: number;
-  homeTeamGoals?: number;
+  homeTeam: number;
+  homeTeamGoals: number;
   awayTeam: number;
   awayTeamGoals: number;
 }

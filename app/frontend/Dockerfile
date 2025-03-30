@@ -1,14 +1,7 @@
 FROM node:16.14-alpine
 WORKDIR /app-frontend
-
+COPY package* ./
 EXPOSE 3000
-
-COPY package.json .
-
-RUN ["npm", "install"]
-
 COPY . .
-
-RUN ["npm", "run", "build"]
-
+RUN npm install
 CMD ["npm", "start"]

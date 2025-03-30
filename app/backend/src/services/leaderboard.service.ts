@@ -1,79 +1,88 @@
-import Matchers from '../database/models/MatchesModel';
-import Teams from '../database/models/TeamsModel';
+import Match from '../database/models/MatchesModel';
+import Team from '../database/models/TeamsModel';
+import { ILeaderboard } from '../interfaces';
 
 export default class LeaderboardService {
-  private _team;
-  private _leaderboard;
-  constructor() {
-    this._leaderboard = Matchers.findAll();
-    this._team = Teams;
-  }
+    constructor(
+        private teamModel: typeof Team,
+        private matchModel: typeof Match,
+    ) { }
 
-  private async totalMatches(team: number) {
-    const matches = await this._leaderboard;
+    static calcLeaderboard(data: Match[]): ILeaderboard {
+        const totalVictories = data.filter((game) => game.homeTeamGoals > game.awayTeamGoals).length;
 
-    return matches.filter((matche) => matche.homeTeam === team && !matche.inProgress);
-  }
+        const totalDraws = data.filter((game) => game.homeTeamGoals === game.awayTeamGoals).length;
 
-  private async victories(team: number) {
-    const victory = await this.totalMatches(team);
+        const totalLosses = data.filter((game) => game.homeTeamGoals < game.awayTeamGoals).length;
 
-    return victory.filter((matche) => matche.homeTeamGoals > matche.awayTeamGoals);
-  }
+        const totalPoints = 3 * (totalVictories) + totalDraws;
 
-  private async draws(team: number) {
-    const draw = await this.totalMatches(team);
+        const goalsFavor = data.map((game) => game.homeTeamGoals).reduce((acc, cur) => acc + cur);
 
-    return draw.filter((matche) => matche.homeTeamGoals === matche.awayTeamGoals);
-  }
+        const goalsOwn = data.map((game) => game.awayTeamGoals).reduce((acc, cur) => acc + cur);
 
-  private async losses(team: number) {
-    const loss = await this.totalMatches(team);
+        const goalsBalance = goalsFavor - goalsOwn;
 
-    return loss.filter((matche) => matche.homeTeamGoals < matche.awayTeamGoals);
-  }
+        const efficiency = Number(((totalPoints / (data.length * 3)) * 100).toFixed(2));
 
-  private async favorGoals(team: number) {
-    const goal = await this.totalMatches(team);
+        return {
+            totalPoints,
+            totalVictories,
+            totalDraws,
+            totalLosses,
+            goalsFavor,
+            goalsOwn,
+            goalsBalance,
+            efficiency,
+        };
+    }
 
-    return goal.reduce((acc, cur) => acc + cur.homeTeamGoals, 0);
-  }
+    static createLeaderboard(team: Team, teamData: Match[]): ILeaderboard {
+        const leaderboardCalc = LeaderboardService.calcLeaderboard(teamData);
 
-  private async ownGoals(team: number) {
-    const goal = await this.totalMatches(team);
+        const teamLeaderBoard = {
+            name: team.teamName,
+            totalPoints: leaderboardCalc.totalPoints,
+            totalGames: teamData.length,
+            totalVictories: leaderboardCalc.totalVictories,
+            totalDraws: leaderboardCalc.totalDraws,
+            totalLosses: leaderboardCalc.totalLosses,
+            goalsFavor: leaderboardCalc.goalsFavor,
+            goalsOwn: leaderboardCalc.goalsOwn,
+            goalsBalance: leaderboardCalc.goalsBalance,
+            efficiency: leaderboardCalc.efficiency,
+        };
 
-    return goal.reduce((acc, cur) => acc + cur.awayTeamGoals, 0);
-  }
+        return teamLeaderBoard;
+    }
 
-  private async efficiencies(team: number) {
-    const multiplerEff = 3;
-    const multiplerTotalEff = 100;
-    const efficiency = ((await this.victories(team)).length * multiplerEff)
-    + (await this.draws(team)).length;
-    const maxEfficiency = (await this.totalMatches(team)).length * multiplerEff;
+    static sortLeaderboard(leaderboard: ILeaderboard[]): ILeaderboard[] {
+        const sortFunction = (teamScore1: ILeaderboard, teamScore2: ILeaderboard) =>
+            teamScore2.totalPoints - teamScore1.totalPoints
+            || teamScore2.totalVictories - teamScore1.totalVictories
+            || teamScore2.goalsBalance - teamScore1.goalsBalance
+            || teamScore2.goalsFavor - teamScore1.goalsFavor
+            || teamScore1.goalsOwn - teamScore2.goalsOwn;
 
-    return ((efficiency / maxEfficiency) * multiplerTotalEff).toFixed(2);
-  }
+        const sortedLeaderboard = leaderboard.sort(sortFunction);
 
-  public async getAll() {
-    const multiplerEff = 3;
-    const teams = await this._team.findAll();
-    const leaderboard = await Promise.all(teams.map(async (team) => ({
-      name: team.teamName,
-      totalPoints: ((await this.victories(team.id)).length * multiplerEff)
-      + (await this.draws(team.id)).length,
-      totalGames: (await this.totalMatches(team.id)).length,
-      totalVictories: (await this.victories(team.id)).length,
-      totalDraws: (await this.draws(team.id)).length,
-      totalLosses: (await this.losses(team.id)).length,
-      goalsFavor: await this.favorGoals(team.id),
-      goalsOwn: await this.ownGoals(team.id),
-      goalsBalance: await this.favorGoals(team.id) - await this.ownGoals(team.id),
-      efficiency: await this.efficiencies(team.id),
-    })));
-    const res = leaderboard.sort((a, b) => b.totalPoints - a.totalPoints || b.goalsBalance
-    - a.goalsBalance || b.goalsFavor - a.goalsFavor || b.goalsOwn - a.goalsOwn);
+        return sortedLeaderboard;
+    }
 
-    return { status: 200, res };
-  }
+    async getAllHome(): Promise<ILeaderboard[]> {
+        const teams = await this.teamModel.findAll();
+
+        const matches = await this.matchModel.findAll({
+            where: { inProgress: 0 },
+        });
+
+        const leaderboard = teams.map((team) => {
+            const teamData = matches.filter((match) => match.homeTeam === team.id);
+            return LeaderboardService.createLeaderboard(team, teamData);
+        });
+
+        const sortedLeaderboard = LeaderboardService.sortLeaderboard(leaderboard);
+
+        return sortedLeaderboard;
+    }
 }

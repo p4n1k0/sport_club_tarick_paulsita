@@ -9,6 +9,7 @@ export default class Matches extends Model {
   declare awayTeam: number;
   declare awayTeamGoals: number;
   declare inProgress: boolean;
+
 }
 
 Matches.init(
@@ -27,7 +28,7 @@ Matches.init(
   },
 );
 
-TeamsModel.hasMany(Matches, { foreignKey: 'homeTeam', as: 'homeTeamHasMany' });
-TeamsModel.hasMany(Matches, { foreignKey: 'awayTeam', as: 'awayTeamHasMany' });
 Matches.belongsTo(TeamsModel, { foreignKey: 'homeTeam', as: 'teamHome' });
 Matches.belongsTo(TeamsModel, { foreignKey: 'awayTeam', as: 'teamAway' });
+TeamsModel.hasMany(Matches, { foreignKey: 'homeTeam', as: 'homeMatches' });
+TeamsModel.hasMany(Matches, { foreignKey: 'awayTeam', as: 'awayMatches' });

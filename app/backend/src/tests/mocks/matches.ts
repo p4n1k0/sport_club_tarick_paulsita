@@ -1,4 +1,4 @@
-export const matchData: unknown = [{
+export const matchData = [{
     homeTeam: 16,
     homeTeamGoals: 1,
     awayTeam: 8,
@@ -97,13 +97,20 @@ export const matchesNotInProgress = [{
     }
 }]
 
-export const matchesInserted = {
+export const matcheInserted = {
     id: 1,
     homeTeam: 16,
     homeTeamGoals: 2,
     awayTeam: 8,
     awayTeamGoals: 2,
-    inProgress: 1, 
+    inProgress: true, 
+}
+
+export const insertMatche = {
+    homeTeam: 16,
+    awayTeam: 8,
+    homeTeamsGoals: 2,
+    awayTeamsGoals: 2,
 }
 
 export const matchesEqualsTeam = {

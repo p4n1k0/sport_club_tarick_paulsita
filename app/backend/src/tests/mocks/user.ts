@@ -7,19 +7,19 @@ export const userData = {
     id: 1,
     username: 'User',
     role: 'user',
-    email: 'test@email.com',
-    password: '123456',
+    email: 'admin@admin.com',
+    password: 'secret_admin',
   }
 }
 
 export const login = {
   valid: {
-    email: 'test@email.com',
-    password: '123456',
+    email: userData.valid.email,
+    password: userData.valid.password,
   },
   emailInvalid: {
-    email: 'test.com',
-    password: '123456',
+    email: undefined,
+    password: userData.valid.password,
   },
   userNotExist: {
     email: 'notexist@email.com',

@@ -4,7 +4,7 @@ import * as chai from 'chai';
 import chaiHttp = require('chai-http');
 
 import App from '../app';
-import { team, teamData } from './mocks/teams';
+import { teamData } from './mocks/teams';
 
 chai.use(chaiHttp);
 
@@ -18,7 +18,7 @@ describe('Testando o endpoint "/teams"', () => {
         const data = await chai.request(app).get('/teams').send();
 
         expect(data.status).to.be.deep.eq(200);
-        expect(data.body).to.be.deep.eq(teamData)
+        expect(data.body).to.be.deep.eq(teamData);
     });
 
     it('retorna time pelo id', async function () {

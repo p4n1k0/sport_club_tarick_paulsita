@@ -6,7 +6,7 @@ import chaiHttp = require('chai-http');
 import App from '../app';
 
 import { login } from './mocks/user';
-import { matchesEqualsTeam, matcheTeamNotExist } from './mocks/matches';
+import { allMatches, matchData, matchesEqualsTeam, matchesInProgress, matchesNotInProgress, matcheTeamNotExist } from './mocks/matches';
 
 chai.use(chaiHttp);
 
@@ -19,19 +19,19 @@ describe('Testando o endpoint "/matches"', () => {
     it('retorna partidas', async function () {
         const data = await chai.request(app).get('/matches').send();
 
-        expect(data.status).to.be.deep.eq(200);
+        expect(data.body).to.be.deep.eq(allMatches);
     });
 
     it('retorna partidas em andamento', async function () {
         const data = await chai.request(app).get('/matches?inProgress=true').send();
 
-        expect(data.status).to.be.deep.eq(200);
+        expect(data.body).to.be.deep.eq(matchesInProgress);
     });
 
     it('retorna partidas finalizadas', async function () {
         const data = await chai.request(app).get('/matches?inProgress=false').send();
 
-        expect(data.status).to.be.deep.eq(200);
+        expect(data.body).to.be.deep.eq(matchesNotInProgress);
     });
 
     it('será possível salvar uma partida em andamento como true no banco de dados', async function () {
@@ -59,6 +59,7 @@ describe('Testando o endpoint "/matches"', () => {
         const data = await chai.request(app).patch('/matches/:id/finish').send().set('Authorization', token.body.token);
 
         expect(data.status).to.be.deep.eq(200);
+        expect(data.body).to.be.deep.eq('Finished');
     });
 
     it('ao inserir partidas iguais, retorne um erro', async function () {

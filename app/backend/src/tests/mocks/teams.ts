@@ -16,5 +16,3 @@ export const teamData = [
     { id: 15, teamName: 'São José-SP' },
     { id: 16, teamName: 'São Paulo' },
 ];
-
-export const team = { id: 1, teamName: 'Avaí/Kindermann' };
